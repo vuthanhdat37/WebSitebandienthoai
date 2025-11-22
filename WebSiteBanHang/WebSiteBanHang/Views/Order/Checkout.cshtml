@@ -1,0 +1,387 @@
+@model CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<div class="checkout-container">
+    <div class="checkout-form">
+        <div class="form-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0"><i class="fas fa-truck icon"></i> Thông Tin Giao Hàng</h3>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="useProfileBtn">
+                    <i class="fas fa-user me-2"></i>Sử dụng địa chỉ của bạn
+                </button>
+            </div>
+            <form asp-action="Checkout" method="post" id="checkoutForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Order.ReceiverName">Họ Tên Người Nhận</label>
+                            <input asp-for="Order.ReceiverName" class="form-control" placeholder="Nguyễn Văn An" required />
+                            <span asp-validation-for="Order.ReceiverName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Order.ReceiverPhone">Số Điện Thoại</label>
+                            <input asp-for="Order.ReceiverPhone" class="form-control" placeholder="09xxxxxxxx" required />
+                            <span asp-validation-for="Order.ReceiverPhone" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Order.ShippingAddress">Địa Chỉ Giao Hàng</label>
+                    <textarea asp-for="Order.ShippingAddress" class="form-control" rows="3" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố" required></textarea>
+                    <span asp-validation-for="Order.ShippingAddress" class="text-danger"></span>
+                </div>
+                 <div class="form-group">
+                    <label asp-for="Order.Notes">Ghi Chú (tùy chọn)</label>
+                    <textarea asp-for="Order.Notes" class="form-control" rows="2" placeholder="Yêu cầu thêm..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-credit-card icon"></i> Phương Thức Thanh Toán</h3>
+            <div class="payment-methods">
+                 <div class="payment-option">
+                    <input type="radio" id="payment_cod" name="PaymentMethod" value="COD" checked form="checkoutForm">
+                    <label for="payment_cod" class="payment-option-label">
+                        <div class="payment-option-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="payment-option-content">
+                            <span class="payment-option-title">Thanh toán khi nhận hàng (COD)</span>
+                            <span class="payment-option-desc">Thanh toán tiền mặt cho nhân viên giao hàng.</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" id="payment_vnpay" name="PaymentMethod" value="VNPay" form="checkoutForm">
+                    <label for="payment_vnpay" class="payment-option-label">
+                        <div class="payment-option-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="payment-option-content">
+                            <span class="payment-option-title">Thanh toán qua VNPay</span>
+                            <span class="payment-option-desc">Thanh toán qua cổng VNPay (ATM/Visa/Master/QR Code).</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-summary">
+        <div class="summary-card">
+            <h3 class="summary-title">Tóm Tắt Đơn Hàng</h3>
+            <ul class="summary-product-list">
+                @if (Model.CartItems != null && Model.CartItems.Any())
+                {
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <li class="summary-product-item">
+                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="summary-product-image">
+                            <div class="summary-product-info">
+                                <span class="summary-product-name">@item.Product.Name</span>
+                                <span class="summary-product-quantity">Số lượng: @item.Quantity</span>
+                            </div>
+                            <div class="summary-product-price-container">
+                                @if (item.Product.DiscountPrice.HasValue)
+                                {
+                                    <span class="summary-product-price discount">@((item.Quantity * item.Product.EffectivePrice).ToString("N0"))đ</span>
+                                    <span class="summary-product-price original">@((item.Quantity * item.Product.Price).ToString("N0"))đ</span>
+                                }
+                                else
+                                {
+                                    <span class="summary-product-price">@((item.Quantity * item.Product.Price).ToString("N0"))đ</span>
+                                }
+                            </div>
+                        </li>
+                    }
+                }
+            </ul>
+            <div class="summary-breakdown">
+                <div class="summary-line">
+                    <span>Tạm tính</span>
+                    <span>@Model.CartTotal.ToString("N0")đ</span>
+                </div>
+                <div class="summary-line">
+                    <span>Phí vận chuyển</span>
+                    <span>Miễn phí</span>
+                </div>
+            </div>
+            <div class="summary-total">
+                <span>Tổng cộng</span>
+                <span class="total-price">@Model.CartTotal.ToString("N0")đ</span>
+            </div>
+             <button type="submit" class="btn-submit-order" form="checkoutForm" id="submitBtn">
+                <i class="fas fa-lock"></i>
+                <span id="submitBtnText">Hoàn Tất Đơn Hàng</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const paymentRadios = document.querySelectorAll('input[name="PaymentMethod"]');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const useProfileBtn = document.getElementById('useProfileBtn');
+
+            // Payment method change handler
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === 'VNPay') {
+                        submitBtnText.textContent = 'Tiến hành thanh toán VNPay';
+                    } else {
+                        submitBtnText.textContent = 'Hoàn Tất Đơn Hàng';
+                    }
+                });
+            });
+
+            // Use profile button handler
+            useProfileBtn.addEventListener('click', function () {
+                const btn = this;
+                const originalText = btn.innerHTML;
+                
+                // Show loading state
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải...';
+
+                // Make AJAX call to get user profile
+                fetch('/Order/GetUserProfile')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Fill form with user data
+                            document.getElementById('Order_ReceiverName').value = data.data.fullName || '';
+                            document.getElementById('Order_ReceiverPhone').value = data.data.phoneNumber || '';
+                            document.getElementById('Order_ShippingAddress').value = data.data.address || '';
+                            
+                            // Show success message
+                            showNotification('Đã điền thông tin từ hồ sơ của bạn!', 'success');
+                        } else {
+                            if (data.redirectToManage) {
+                                // Show confirmation dialog
+                                if (confirm(data.message + ' Bạn có muốn chuyển đến trang quản lý tài khoản không?')) {
+                                    window.location.href = '/Identity/Account/Manage';
+                                }
+                            } else {
+                                showNotification(data.message, 'error');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Đã xảy ra lỗi khi lấy thông tin người dùng.', 'error');
+                    })
+                    .finally(() => {
+                        // Restore button state
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    });
+            });
+
+            // Notification function
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                notification.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --primary-color: #0056b3; /* Darker, more professional blue */
+            --primary-light: #e6f0ff;
+            --border-color: #dee2e6;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --body-bg: #f7f9fc;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .checkout-form .form-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title .icon {
+            color: var(--primary-color);
+            margin-right: 12px;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+
+        /* Payment Methods */
+        .payment-methods { display: flex; flex-direction: column; gap: 15px; }
+        .payment-option { position: relative; }
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .payment-option-label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .payment-option input:checked + .payment-option-label {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        .payment-option-label:hover { border-color: var(--primary-color); }
+        .payment-option-icon { font-size: 1.5rem; color: var(--primary-color); margin-right: 15px; width: 30px; text-align: center; }
+        .payment-option-content { display: flex; flex-direction: column; }
+        .payment-option-title { font-weight: 600; color: var(--text-primary); }
+        .payment-option-desc { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Summary Card */
+        .checkout-summary .summary-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 20px;
+        }
+        .summary-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 20px; }
+        .summary-product-list {
+            list-style: none; padding: 0; margin-bottom: 20px;
+            max-height: 300px; overflow-y: auto;
+        }
+        .summary-product-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .summary-product-image { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .summary-product-info { flex-grow: 1; }
+        .summary-product-name { font-weight: 500; display: block; font-size: 0.95rem;}
+        .summary-product-quantity { color: var(--text-secondary); font-size: 0.85rem;}
+        
+        .summary-product-price-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .summary-product-price { font-weight: 500; }
+        .summary-product-price.discount { color: var(--primary-color); }
+        .summary-product-price.original {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        .summary-breakdown {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-bottom: 20px;
+        }
+        .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .summary-line span:first-child { color: var(--text-secondary); }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        .summary-total span:first-child { font-weight: 600; font-size: 1.1rem; }
+        .summary-total .total-price { font-weight: 700; font-size: 1.5rem; color: var(--primary-color); }
+
+        .btn-submit-order {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color .2s, transform .2s;
+            margin-top: 25px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap: 10px;
+        }
+        .btn-submit-order:hover {
+            background: #004494; /* Slightly darker blue */
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .checkout-summary {
+                order: -1; /* Move summary to top on mobile */
+                margin-bottom: 30px;
+            }
+            .checkout-summary .summary-card {
+                position: static;
+            }
+        }
+    </style>
+} 

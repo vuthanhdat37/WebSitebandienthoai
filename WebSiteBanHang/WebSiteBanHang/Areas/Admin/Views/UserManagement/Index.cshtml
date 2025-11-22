@@ -1,0 +1,164 @@
+@model IEnumerable<WebSiteBanHang.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Quản Lý Người Dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --success-color: #198754;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+        --light-bg: #f8f9fa;
+        --white-color: #fff;
+        --table-header-bg: #343a40;
+    }
+
+    .admin-page-container {
+        padding: 2.5rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .admin-page-title {
+        color: #343a40;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+    
+    .admin-page-title i {
+        color: var(--primary-color);
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .admin-table-container {
+        background-color: var(--white-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        overflow-x: auto;
+    }
+    
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 1rem;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .admin-table thead {
+        background-color: var(--table-header-bg);
+        color: var(--white-color);
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+    }
+    .admin-table tbody tr:last-of-type { border-bottom: none; }
+    .admin-table tbody tr:hover { background-color: var(--light-bg); }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: .75em;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.375rem;
+    }
+    .role-badge-admin { background-color: var(--danger-color); }
+    .role-badge-user { background-color: var(--success-color); }
+    .role-badge-other { background-color: var(--secondary-color); }
+
+    .admin-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        color: var(--white-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    .action-btn i { font-size: 0.9rem; }
+    .action-btn.manage-roles { background-color: var(--primary-color); }
+    .action-btn.manage-roles:hover { background-color: #0b5ed7; transform: translateY(-1px); }
+</style>
+}
+
+<div class="admin-page-container">
+    <div class="admin-page-header">
+        <h1 class="admin-page-title">
+            <i class="fas fa-users-cog"></i>
+            <span>@ViewData["Title"]</span>
+        </h1>
+    </div>
+
+    <div class="admin-table-container">
+        <table class="table admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th style="width: 200px;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td><strong>@user.UserName</strong></td>
+                        <td>@user.Email</td>
+                        <td>
+                            @foreach (var role in user.Roles)
+                            {
+                                <span class="role-badge @(role.ToLower() == "admin" ? "role-badge-admin" : "role-badge-user")">@role</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="admin-table-actions">
+                                <a asp-action="ManageRoles" asp-route-userId="@user.Id" class="action-btn manage-roles" title="Quản lý vai trò">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span>Quản lý vai trò</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> 

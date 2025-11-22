@@ -1,0 +1,354 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Tech World</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WebSiteBanHang.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        html {
+            height: 100%;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            background-color: #f8f9fa; /* Light grey background for tech theme */
+            font-family: 'Roboto', sans-serif; /* Modern, clean font */
+            color: #212529; /* Darker text */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #fff !important; /* White navbar */
+            border-bottom: 1px solid #dee2e6; /* Light grey border */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .navbar-brand {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #007bff !important; /* Blue brand color */
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            color: #343a40 !important; /* Dark grey nav links */
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .nav-link:hover {
+            color: #007bff !important; /* Blue on hover */
+        }
+        
+        /* Custom Dropdown Style for Tech Theme */
+        .dropdown-menu {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            color: #212529 !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: #f8f9fa;
+            color: #007bff !important;
+        }
+        
+        .main-container {
+            flex-grow: 1;
+        }
+
+        .footer-custom {
+            background-color: #343a40; /* Dark footer */
+            color: #adb5bd; /* Light grey text */
+            padding: 40px 0 20px 0;
+            border-top: 3px solid #007bff; /* Blue top border */
+            width: 100%;
+            margin-top: auto;
+            font-family: 'Roboto', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .footer-custom h5 {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            color: #fff; /* White heading */
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            display: inline-block;
+        }
+
+        .footer-custom ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .footer-custom li {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .footer-custom a {
+            color: #adb5bd; /* Light grey links */
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-custom a:hover {
+            color: #fff; /* White on hover */
+            text-decoration: underline;
+        }
+
+        .footer-custom .contact-info-item i {
+            color: #007bff; /* Blue icons */
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .footer-social-icons a {
+            font-size: 1.6rem;
+            color: #adb5bd;
+            margin-right: 15px;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .footer-social-icons a:last-child {
+            margin-right: 0;
+        }
+        .footer-social-icons a:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .footer-copyright-text {
+            font-size: 0.85rem;
+            color: #6c757d; /* Muted text color */
+            padding-top: 20px;
+            border-top: 1px solid #495057; /* Darker border */
+            margin-top: 30px;
+        }
+        
+        /* Remove bakery-specific root variables */
+        :root {
+            /* No specific root variables needed here now, defined in components */
+        }
+
+        /* Responsive adjustments for footer sections */
+        @@media (max-width: 768px) { 
+            .footer-custom h5 {
+                font-size: 1.4rem;
+                width: 100%;
+                text-align: center;
+            }
+            .footer-custom .col-md-4 {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+            .footer-social-icons {
+                justify-content: center !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand font-weight-bold" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-laptop-code"></i> Tech World</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang Chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Sản Phẩm</a>
+                        </li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Company") || User.IsInRole("Employee"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Quản Lý
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Báo cáo Thống kê</a>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Quản Lý Người Dùng</a>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index">Quản Lý Đơn Hàng</a>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Quản Lý Sản Phẩm</a>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Warehouse" asp-action="Index">Quản Lý Kho Hàng</a>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Quản Lý Danh Mục</a>
+                                    }
+                                    @if (User.IsInRole("Company"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Quản Lý Sản Phẩm</a>
+                                    }
+                                    @if (User.IsInRole("Employee"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index">Quản Lý Đơn Hàng</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- Search Form -->
+                    <form asp-controller="Search" asp-action="Index" method="get" class="form-inline mx-auto my-2 my-lg-0 header-search-form">
+                        <div class="input-group">
+                            <input class="form-control" type="search" name="query" placeholder="Tìm kiếm sản phẩm..." aria-label="Search" value="@Context.Request.Query["query"]">
+                            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingCart" asp-action="Index"><i class="fas fa-shopping-cart"></i> Giỏ Hàng <span class="badge badge-primary cart-count">@await Component.InvokeAsync("ShoppingCartSummary")</span></a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Xin chào @UserManager.GetUserName(User)!
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Tài khoản</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="OrderHistory">Lịch sử đơn hàng</a>
+                                    <div class="dropdown-divider"></div>
+                                    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" id="logoutForm">
+                                        <button type="submit" class="dropdown-item btn btn-link text-dark">Đăng xuất</button>
+                                    </form>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Đăng Ký</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Đăng Nhập</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="main-container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row">
+                <!-- About Section -->
+                <div class="col-md-4 mb-4">
+                    <h5>Tech World</h5>
+                    <p>
+                        Chuyên cung cấp các sản phẩm điện thoại thông minh chính hãng từ các thương hiệu hàng đầu.
+                        Cam kết chất lượng, giá cả cạnh tranh và dịch vụ hậu mãi tốt nhất.
+                    </p>
+                </div>
+
+                <!-- Quick Links Section -->
+                <div class="col-md-4 mb-4">
+                    <h5>Liên Kết Nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Index">Trang Chủ</a></li>
+                        <li><a asp-controller="Product" asp-action="Index">Sản Phẩm</a></li>
+                        <li><a href="#">Về Chúng Tôi</a></li>
+                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="#">Liên Hệ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="col-md-4 mb-4">
+                    <h5>Liên Hệ</h5>
+                    <ul class="list-unstyled contact-info-item">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường Công Nghệ, Q.1, TP. HCM</li>
+                        <li><i class="fas fa-phone"></i> (028) 3812 3456</li>
+                        <li><i class="fas fa-envelope"></i> support@techworld.com</li>
+                    </ul>
+                    <div class="footer-social-icons d-flex mt-3">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center footer-copyright-text">
+                <p>&copy; @DateTime.Now.Year - Tech World. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbox HTML -->
+    <div id="chat-icon">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+    <div id="chat-window" class="hidden">
+        <div id="chat-header">
+            <span>Tech World Assistant</span>
+            <div>
+                <button id="reset-chat-btn" title="Bắt đầu lại"><i class="fas fa-sync-alt"></i></button>
+                <button id="close-chat-btn" title="Đóng">&times;</button>
+            </div>
+        </div>
+        <div id="chat-body">
+            <!-- Messages will be loaded here by JavaScript -->
+        </div>
+        <div id="chat-footer">
+            <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button id="send-chat-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <!-- End Chatbox HTML -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

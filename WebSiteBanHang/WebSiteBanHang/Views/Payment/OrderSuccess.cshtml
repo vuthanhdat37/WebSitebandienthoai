@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+}
+
+<div class="container text-center mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                    <h1 class="card-title h2">@TempData["PaymentMessage"]</h1>
+                    <p class="card-text lead">Cảm ơn bạn đã mua hàng. Đơn hàng của bạn với mã <strong>#@ViewBag.OrderId</strong> đã được thanh toán thành công.</p>
+                    <p>Chúng tôi sẽ xử lý và giao hàng cho bạn trong thời gian sớm nhất.</p>
+                    <div class="mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Tiếp tục mua sắm</a>
+                        <a asp-controller="Account" asp-action="OrderHistory" class="btn btn-outline-secondary">Xem lịch sử đơn hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+} 

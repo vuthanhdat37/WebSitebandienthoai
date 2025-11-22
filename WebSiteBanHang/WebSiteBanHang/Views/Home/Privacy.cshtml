@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Giới Thiệu Về Chúng Tôi";
+}
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1>@ViewData["Title"]</h1>
+        <hr class="w-50 mx-auto" />
+    </div>
+
+    <div class="row align-items-center about-us-section">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="https://i.pinimg.com/736x/43/c6/b1/43c6b13fa02d002e2e01b666338c0d5c.jpg" class="img-fluid rounded shadow-lg" alt="Tiệm Bánh Hẹ Hẹ - Giới Thiệu" style="border: 5px solid #FFD700;" />
+        </div>
+        <div class="col-md-6">
+            <h2>Chào Mừng Đến Tiệm Bánh Hẹ Hẹ</h2>
+            <p class="lead">Nơi mỗi chiếc bánh là một câu chuyện ngọt ngào.</p>
+            <p>Tại Tiệm Bánh Hẹ Hẹ, chúng tôi tin rằng mỗi chiếc bánh là một tác phẩm nghệ thuật, được làm từ những nguyên liệu tươi ngon nhất và nướng bằng cả trái tim. Với niềm đam mê và sự tỉ mỉ trong từng công đoạn, chúng tôi mong muốn mang đến những trải nghiệm ẩm thực đáng nhớ.</p>
+            <p>Sứ mệnh của chúng tôi là lan tỏa niềm vui và sự ngọt ngào đến mọi nhà qua từng miếng bánh thơm ngon, chất lượng. Chúng tôi không ngừng sáng tạo để cho ra đời những sản phẩm mới lạ, độc đáo, phù hợp với khẩu vị đa dạng của quý khách.</p>
+            <p>Hãy đến và cảm nhận sự khác biệt tại Tiệm Bánh Hẹ Hẹ. Chúng tôi luôn sẵn lòng phục vụ và mang đến cho bạn những khoảnh khắc tuyệt vời nhất!</p>
+            
+            <div class="mt-4">
+                <h4>Liên Hệ Với Chúng Tôi</h4>
+                <p><i class="fas fa-map-marker-alt me-2" style="color: #DAA520;"></i> Địa chỉ: 123 Đường Bánh Ngọt, Quận Cầu Vồng, TP. Mộng Mơ</p>
+                <p><i class="fas fa-phone-alt me-2" style="color: #DAA520;"></i> Điện thoại: (012) 345-6789</p>
+                <p><i class="fas fa-envelope me-2" style="color: #DAA520;"></i> Email: info@tiembanhhehe.com</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .about-us-section h2 {
+            color: #8B4513; /* SaddleBrown */
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .about-us-section .lead {
+            font-size: 1.25rem;
+            color: #5D4037;
+            margin-bottom: 20px;
+        }
+        .about-us-section p {
+            color: #5D4037;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+         .about-us-section img {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .about-us-section img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+        }
+    </style>
+}

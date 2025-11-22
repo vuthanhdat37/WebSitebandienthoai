@@ -1,0 +1,381 @@
+﻿@model WebSiteBanHang.ViewModels.ProductIndexViewModel
+
+@{
+    ViewData["Title"] = Model.SelectedCategoryName ?? "Tất cả sản phẩm";
+}
+
+<div class="container-fluid mt-4 product-page-container">
+    <div class="row">
+        <!-- Cột Danh Mục (Sidebar) -->
+        <div class="col-lg-3">
+            <div class="sidebar-widget">
+                <h4 class="widget-title"><i class="fas fa-list-ul"></i> Danh Mục</h4>
+                <div class="list-group category-list">
+                    <a asp-action="Index" asp-controller="Product" asp-route-categoryId=""
+                       class="list-group-item list-group-item-action @(Model.SelectedCategoryId == null ? "active" : "")">
+                        Tất cả sản phẩm
+                    </a>
+                    @if (Model.Categories != null && Model.Categories.Any())
+                    {
+                        foreach (var category in Model.Categories)
+                        {
+                            <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@category.Id"
+                               class="list-group-item list-group-item-action @(Model.SelectedCategoryId == category.Id ? "active" : "")">
+                                @category.Name
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột Hiển Thị Sản Phẩm -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-title">@ViewData["Title"]</h2>
+                <div class="sort-options">
+                    <a asp-action="Index" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sortOrder="@ViewData["PriceSortParmAsc"]" class="btn sort-btn @(ViewData["CurrentSort"] as string == "price_asc" ? "active" : "")" title="Sắp xếp theo giá tăng dần">
+                        <i class="fas fa-sort-amount-up"></i> Giá Thấp - Cao
+                    </a>
+                    <a asp-action="Index" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sortOrder="@ViewData["PriceSortParm"]" class="btn sort-btn @(ViewData["CurrentSort"] as string == "price_desc" ? "active" : "")" title="Sắp xếp theo giá giảm dần">
+                        <i class="fas fa-sort-amount-down"></i> Giá Cao - Thấp
+                    </a>
+                </div>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-area="Admin" asp-action="Add" asp-controller="Product" class="btn btn-primary btn-add-product">
+                        <i class="fas fa-plus"></i> Thêm sản phẩm mới
+                    </a>
+                }
+            </div>
+
+            @if (Model.Products != null && Model.Products.Any())
+            {
+                <div class="row product-grid row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="col">
+                            <div class="card product-card-custom h-100 @(product.Quantity <= 0 ? "out-of-stock" : "")">
+                                <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id" class="product-card-link">
+                                    <div class="product-image-container">
+                                        @if (product.DiscountPercent.HasValue)
+                                        {
+                                            <div class="discount-badge">@product.DiscountPercent% OFF</div>
+                                        }
+                                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.png" : Url.Content(product.ImageUrl))"
+                                             class="product-image" alt="@product.Name">
+                                        @if (product.Quantity <= 0)
+                                        {
+                                            <div class="stock-overlay">
+                                                <span class="stock-overlay-text">Hết Hàng</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="product-title">
+                                        <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id">@product.Name</a>
+                                    </h5>
+                                    <div class="price-display">
+                                        @if (product.DiscountPrice.HasValue)
+                                        {
+                                            <span class="discount-price">@product.DiscountPrice.Value.ToString("N0") đ</span>
+                                            <span class="original-price">@product.Price.ToString("N0") đ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="product-price">@product.Price.ToString("N0") đ</span>
+                                        }
+                                    </div>
+                                    <div class="mt-auto">
+                                        @if (product.Quantity > 0)
+                                        {
+                                            <a asp-controller="ShoppingCart" asp-action="AddToCart" asp-route-productId="@product.Id" class="btn btn-primary-custom w-100">
+                                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-secondary w-100" disabled>
+                                                <i class="fas fa-times-circle"></i> Hết Hàng
+                                            </button>
+                                        }
+
+                                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                        {
+                                            <div class="btn-group w-100 mt-2">
+                                                <a asp-area="Admin" asp-action="Update" asp-controller="Product" asp-route-id="@product.Id" class="btn btn-sm btn-outline-info flex-grow-1">
+                                                    <i class="fas fa-edit"></i> Sửa
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-danger single-delete-btn flex-grow-1" data-id="@product.Id" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                                                    <i class="fas fa-trash-alt"></i> Xóa
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> Hiện chưa có sản phẩm nào trong danh mục "@Model.SelectedCategoryName".
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xác Nhận Xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa sản phẩm này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            let productIdToDelete;
+
+            // Handle single delete button click
+            $(document).on('click', '.single-delete-btn', function () {
+                productIdToDelete = $(this).data('id');
+            });
+            
+            // Handle confirm delete button click in modal
+            $('#confirmDeleteBtn').on('click', function () {
+                if (!productIdToDelete) return;
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "Product", new { area = "Admin" })/' + productIdToDelete,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() 
+                    },
+                    success: function (result) {
+                        deleteModal.hide();
+                        // Find the card and fade it out
+                        $('.single-delete-btn[data-id="' + productIdToDelete + '"]').closest('.col').fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        deleteModal.hide();
+                        alert('Đã có lỗi xảy ra khi xóa sản phẩm.');
+                    }
+                });
+            });
+
+             $('#deleteConfirmModal').on('hidden.bs.modal', function () {
+                productIdToDelete = null;
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        :root {
+            --primary-color: #007bff; /* Xanh dương chủ đạo */
+            --primary-hover-color: #0056b3;
+            --secondary-text-color: #6c757d;
+            --card-bg-color: #ffffff;
+            --body-bg-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--body-bg-color);
+        }
+
+        .product-page-container {
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .btn-add-product {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            font-weight: 500;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .btn-add-product:hover {
+            background-color: var(--primary-hover-color);
+            border-color: var(--primary-hover-color);
+            color: #fff;
+        }
+
+        /* Sidebar */
+        .sidebar-widget {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #343a40;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .category-list .list-group-item {
+            border: none;
+            padding: 0.75rem 1rem;
+            color: var(--secondary-text-color);
+            font-weight: 500;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .category-list .list-group-item:hover,
+        .category-list .list-group-item:focus {
+            background-color: #e9ecef;
+            color: var(--primary-color);
+        }
+
+        .category-list .list-group-item.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+        }
+        
+        /* Product Card */
+        .product-card-custom {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+            position: relative; /* Needed for overlay */
+        }
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+            border-radius: 5px;
+            z-index: 3;
+        }
+        .product-card-custom.out-of-stock {
+            opacity: 0.7;
+        }
+
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .stock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .stock-overlay-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc3545;
+            padding: 0.5rem 1rem;
+            border: 2px solid #dc3545;
+            border-radius: 5px;
+            background-color: rgba(255,255,255,0.8);
+        }
+
+        .product-card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Key property to scale and crop the image */
+            transition: transform 0.3s ease;
+        }
+        .product-card-custom:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-card-custom .card-body {
+            padding: 1rem;
+        }
+
+        .card-title a {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #343a40;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .card-title a:hover {
+            color: var(--primary-color);
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .price-display { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 1rem; }
+        .original-price { text-decoration: line-through; color: #6c757d; font-size: 0.9em; }
+        .discount-price { font-size: 1.2rem; font-weight: 600; color: #dc3545; }
+
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .admin-actions .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .alert-info {
+            background-color: #e7f3fe;
+            border-color: #d0eaff;
+            color: #0c5460;
+        }
+    </style>
+}

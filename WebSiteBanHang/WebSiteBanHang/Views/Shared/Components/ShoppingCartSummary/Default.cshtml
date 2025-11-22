@@ -1,0 +1,10 @@
+@model ShoppingCartViewModel
+
+@if (Model.ShoppingCart.ShoppingCartItems.Any())
+{
+    @Model.ShoppingCart.ShoppingCartItems.Sum(i => i.Quantity)
+}
+else
+{
+    @:0
+} 

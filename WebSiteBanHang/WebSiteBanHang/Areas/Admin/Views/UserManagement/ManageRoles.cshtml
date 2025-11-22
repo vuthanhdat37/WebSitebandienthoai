@@ -1,0 +1,137 @@
+@model WebSiteBanHang.ViewModels.UserRolesViewModel
+
+@{
+    ViewData["Title"] = "Quản Lý Vai Trò";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --light-bg: #f8f9fa;
+        --white-color: #fff;
+    }
+    .admin-form-container {
+        padding: 2.5rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    .admin-form-title {
+        color: #343a40;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    .admin-form-title i {
+        color: var(--primary-color);
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+    }
+    .user-info-card {
+        background-color: var(--white-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border: 1px solid #dee2e6;
+    }
+    .user-info-card h5 {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    .roles-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .roles-list li {
+        margin-bottom: 0.75rem;
+    }
+    .form-check-label {
+        font-size: 1.05rem;
+    }
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #dee2e6;
+    }
+    .admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--white-color);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    .btn-primary { background-color: var(--primary-color); }
+    .btn-primary:hover { background-color: #0b5ed7; transform: translateY(-2px); }
+    .btn-secondary { background-color: var(--secondary-color); }
+    .btn-secondary:hover { background-color: #5c636a; transform: translateY(-2px); }
+</style>
+}
+
+<div class="admin-form-container">
+    <h1 class="admin-form-title">
+        <i class="fas fa-user-shield"></i>
+        <span>@ViewData["Title"]</span>
+    </h1>
+
+    <div class="user-info-card">
+        <h5>Cấu hình vai trò cho người dùng</h5>
+        <p><strong>Username:</strong> @Model.UserName</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+    </div>
+
+    <form method="post">
+        <input type="hidden" asp-for="UserId" />
+        <div class="card">
+            <div class="card-header">
+                <h5>Chọn vai trò</h5>
+            </div>
+            <div class="card-body">
+                <ul class="roles-list">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <li>
+                            <div class="form-check">
+                                <input type="radio" name="SelectedRole" value="@Model.Roles[i].RoleName" class="form-check-input" id="role_@i" @(Model.Roles[i].IsSelected ? "checked" : "") />
+                                <label class="form-check-label" for="role_@i">
+                                    @Model.Roles[i].RoleName
+                                </label>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="admin-btn btn-primary">
+                <i class="fas fa-save"></i>
+                <span>Cập Nhật Vai Trò</span>
+            </button>
+            <a asp-action="Index" class="admin-btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Quay Lại</span>
+            </a>
+        </div>
+    </form>
+</div> 

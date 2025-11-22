@@ -1,0 +1,231 @@
+@model WebSiteBanHang.Models.Product
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Sản Phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --light-bg: #f8f9fa;
+        --white-color: #fff;
+    }
+    .admin-form-container {
+        padding: 2.5rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+    .admin-form-title {
+        color: #343a40;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    .admin-form-title i {
+        color: var(--primary-color);
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+    }
+    .form-section-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .control-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+    .image-preview-container {
+        border: 2px dashed #ced4da;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .image-preview {
+        max-width: 100%;
+        max-height: 250px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 4px;
+        margin-top: 10px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #dee2e6;
+    }
+    .admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--white-color);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    .btn-primary { background-color: var(--primary-color); }
+    .btn-primary:hover { background-color: #0b5ed7; transform: translateY(-2px); }
+    .btn-secondary { background-color: var(--secondary-color); }
+    .btn-secondary:hover { background-color: #5c636a; transform: translateY(-2px); }
+</style>
+}
+
+<div class="admin-form-container">
+    <h1 class="admin-form-title">
+        <i class="fas fa-edit"></i>
+        <span>@ViewData["Title"]</span>
+    </h1>
+
+    <form asp-action="Update" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-7">
+                <h5 class="form-section-title">Thông Tin & Thông Số</h5>
+                <div class="row">
+                    <div class="col-md-8 form-group">
+                        <label asp-for="Name" class="control-label">Tên sản phẩm</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Price" class="control-label">Giá gốc</label>
+                        <input asp-for="Price" class="form-control" id="price" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label asp-for="DiscountPrice" class="form-label">Giá sau giảm (bỏ trống nếu không giảm)</label>
+                        <input asp-for="DiscountPrice" class="form-control" id="discountPrice" />
+                        <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                        <div id="discountPercent" class="form-text text-success fw-bold mt-1"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Mô tả chi tiết</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Manufacturer" class="control-label">Hãng sản xuất</label>
+                        <input asp-for="Manufacturer" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Color" class="control-label">Màu sắc</label>
+                        <input asp-for="Color" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label asp-for="StorageGB" class="control-label">Lưu trữ (GB)</label>
+                        <input asp-for="StorageGB" type="number" class="form-control" />
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="RamGB" class="control-label">RAM (GB)</label>
+                        <input asp-for="RamGB" type="number" class="form-control" />
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="ScreenSize" class="control-label">Màn hình</label>
+                        <input asp-for="ScreenSize" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CameraSpec" class="control-label">Thông số camera</label>
+                    <input asp-for="CameraSpec" class="form-control" />
+                </div>
+                 <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">Danh mục</label>
+                    <select asp-for="CategoryId" asp-items="@ViewBag.Categories" class="form-select"></select>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <h5 class="form-section-title">Hình Ảnh</h5>
+                <div class="form-group image-preview-container">
+                     <label for="imageUrl" class="control-label">Ảnh hiện tại & Tải ảnh mới</label>
+                    <img id="imagePreview" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/placeholder.png" : Url.Content(Model.ImageUrl))" alt="Xem trước ảnh" class="image-preview" style="display:block;" />
+                    <input type="file" name="imageUrl" id="imageInput" class="form-control mt-2" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="admin-btn btn-primary">
+                <i class="fas fa-save"></i>
+                <span>Cập Nhật</span>
+            </button>
+            <a asp-action="Index" class="admin-btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Quay Lại</span>
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            const [file] = event.target.files;
+            if (file) {
+                const preview = document.getElementById('imagePreview');
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceInput = document.getElementById('price');
+            const discountPriceInput = document.getElementById('discountPrice');
+            const discountPercentDiv = document.getElementById('discountPercent');
+
+            function calculateDiscount() {
+                const price = parseFloat(priceInput.value);
+                const discountPrice = parseFloat(discountPriceInput.value);
+
+                if (!isNaN(price) && !isNaN(discountPrice) && price > 0 && discountPrice > 0 && discountPrice < price) {
+                    const percentage = Math.round((1 - (discountPrice / price)) * 100);
+                    discountPercentDiv.textContent = `Giảm ${percentage}%`;
+                } else {
+                    discountPercentDiv.textContent = '';
+                }
+            }
+
+            priceInput.addEventListener('input', calculateDiscount);
+            discountPriceInput.addEventListener('input', calculateDiscount);
+
+            // Initial calculation on page load
+            calculateDiscount();
+        });
+    </script>
+} 

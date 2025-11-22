@@ -1,0 +1,378 @@
+﻿@model WebSiteBanHang.ViewModels.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Trang Chủ - Cửa Hàng Điện Thoại";
+}
+
+@*
+    LINK ẢNH ĐƯỢC SỬ DỤNG:
+    Hero: https://images.unsplash.com/photo-1580974928064-f0aeef70895a
+    Feature 1: https://images.unsplash.com/photo-1491933382434-500287f9b54b
+    Feature 2: https://images.unsplash.com/photo-1556742111-a301076d9d18
+    Feature 3: https://media.istockphoto.com/id/876689302/vi/anh/%E1%BA%A3nh-ph%E1%BA%B3ng-c%E1%BB%A7a-b%C3%A0n-office-v%E1%BB%9Bi-m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-m%C3%A1y-t%C3%ADnh-b%E1%BA%A3ng-k%E1%BB%B9-thu%E1%BA%ADt-s%E1%BB%91-%C4%91i%E1%BB%87n.jpg?s=612x612&w=0&k=20&c=Oe_woU13C-XsVHVfLXP7fTorzmatB0fFv9JJTIgHhSE=
+    Feature 4: https://media.istockphoto.com/id/1280118635/vi/anh/c%C3%A1c-thi%E1%BA%BFt-b%E1%BB%8B-k%E1%BB%B9-thu%E1%BA%ADt-s%E1%BB%91-hi%E1%BB%87n-%C4%91%E1%BA%A1i-%C4%91%E1%BB%83-truy%E1%BB%81n-v%C3%A0-l%C6%B0u-tr%E1%BB%AF-th%C3%B4ng-tin.jpg?s=612x612&w=0&k=20&c=fgxnHB22CoMB2KD9mmfaHnUvr3hdQzYmg5LI88rAbuY=
+*@
+
+<!-- Hero Section Updated -->
+<div class="hero-container">
+    <div class="hero-background"></div>
+    <div class="hero-content text-center">
+        <h1 class="display-3 fw-bolder">Thế Giới Công Nghệ Trong Tầm Tay</h1>
+        <p class="lead fw-normal mb-4">Khám phá bộ sưu tập điện thoại thông minh mới nhất từ các thương hiệu hàng đầu.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn-primary-gradient">
+            <i class="fas fa-shopping-bag me-2"></i> Mua sắm ngay
+        </a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Feature Grid Section Updated -->
+    <section class="feature-grid text-center">
+        <div class="row g-4">
+            <!-- Feature 1: Mobile Photography -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 feature-card shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Mobile Photography">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary text-white"><i class="fas fa-camera-retro"></i></div>
+                        <h5 class="card-title fw-bold">Chụp Ảnh Đỉnh Cao</h5>
+                        <p class="card-text flex-grow-1">Bắt trọn mọi khoảnh khắc với hệ thống camera chuyên nghiệp.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature 2: Mobile Payments -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 feature-card shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1556742111-a301076d9d18?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Mobile Payments">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary text-white"><i class="fas fa-wallet"></i></div>
+                        <h5 class="card-title fw-bold">Thanh Toán Một Chạm</h5>
+                        <p class="card-text flex-grow-1">Giao dịch an toàn, nhanh chóng và tiện lợi mọi lúc mọi nơi.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature 3: Work Efficiently (New) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 feature-card shadow-sm">
+                    <img src="https://media.istockphoto.com/id/876689302/vi/anh/%E1%BA%A3nh-ph%E1%BA%B3ng-c%E1%BB%A7a-b%C3%A0n-office-v%E1%BB%9Bi-m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-m%C3%A1y-t%C3%ADnh-b%E1%BA%A3ng-k%E1%BB%B9-thu%E1%BA%ADt-s%E1%BB%91-%C4%91i%E1%BB%87n.jpg?s=612x612&w=0&k=20&c=Oe_woU13C-XsVHVfLXP7fTorzmatB0fFv9JJTIgHhSE=" class="card-img-top" alt="Work Efficiently">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary text-white"><i class="fas fa-briefcase"></i></div>
+                        <h5 class="card-title fw-bold">Làm Việc Hiệu Quả</h5>
+                        <p class="card-text flex-grow-1">Xử lý công việc mượt mà với hiệu năng mạnh mẽ và đa nhiệm thông minh.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature 4: Future Connectivity (New) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 feature-card shadow-sm">
+                    <img src="https://media.istockphoto.com/id/1280118635/vi/anh/c%C3%A1c-thi%E1%BA%BFt-b%E1%BB%8B-k%E1%BB%B9-thu%E1%BA%ADt-s%E1%BB%91-hi%E1%BB%87n-%C4%91%E1%BA%A1i-%C4%91%E1%BB%83-truy%E1%BB%81n-v%C3%A0-l%C6%B0u-tr%E1%BB%AF-th%C3%B4ng-tin.jpg?s=612x612&w=0&k=20&c=fgxnHB22CoMB2KD9mmfaHnUvr3hdQzYmg5LI88rAbuY=" class="card-img-top" alt="Future Connectivity">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary text-white"><i class="fas fa-wifi"></i></div>
+                        <h5 class="card-title fw-bold">Kết Nối Tương Lai</h5>
+                        <p class="card-text flex-grow-1">Trải nghiệm tốc độ vượt trội với các chuẩn kết nối không dây mới nhất.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Refined Featured Products Section -->
+    @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+    {
+        <section class="page-section mb-5">
+            <h2 class="section-title"><span><i class="fas fa-star text-primary"></i> Sản Phẩm Nổi Bật</span></h2>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                @foreach (var product in Model.FeaturedProducts)
+                {
+                    <div class="col">
+                        <div class="card product-card h-100 shadow-sm @(product.Quantity <= 0 ? "out-of-stock" : "")">
+                            <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id" class="product-image-link">
+                                <div class="product-image-container">
+                                    <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.png" : Url.Content(product.ImageUrl))" class="card-img-top" alt="@product.Name">
+                                    @if (product.Quantity <= 0)
+                                    {
+                                        <div class="stock-overlay">
+                                            <span class="stock-overlay-text">Hết Hàng</span>
+                                        </div>
+                                    }
+                                </div>
+                            </a>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="product-title">
+                                    <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id">@product.Name</a>
+                                </h5>
+                                <p class="product-price">@product.Price.ToString("N0") đ</p>
+                                <div class="mt-auto">
+                                    <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary w-100">
+                                        Xem Chi Tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Refined Category Section -->
+    @if (Model.Categories != null && Model.Categories.Any())
+    {
+        <section class="page-section mb-5">
+            <h2 class="section-title"><span><i class="fas fa-tags text-primary"></i> Khám Phá Thương Hiệu</span></h2>
+            <div class="row justify-content-center g-4">
+                @foreach (var category in Model.Categories.Take(2))
+                {
+                    <div class="col-lg-6">
+                        <div class="card category-showcase-card shadow-sm text-center">
+                            <div class="card-body">
+                                <div class="category-icon-big mb-3">
+                                    @if (category.Name.ToLower().Contains("apple"))
+                                    {<i class="fab fa-apple"></i>}
+                                    else if (category.Name.ToLower().Contains("samsung"))
+                                    {<i class="fab fa-android"></i>}
+                                    else
+                                    {<i class="fas fa-mobile-alt"></i>}
+                                </div>
+                                <h4 class="card-title">@category.Name</h4>
+                                <p>Xem tất cả sản phẩm từ thương hiệu @category.Name</p>
+                                <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.Id" class="btn btn-primary-gradient">
+                                    Xem @category.Name <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+@section Styles {
+<style>
+    /* Hero Section Update */
+    .hero-container {
+        position: relative;
+        height: 70vh;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://images.unsplash.com/photo-1580974928064-f0aeef70895a?q=80&w=1974&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* Parallax effect */
+        z-index: 1;
+    }
+
+    .hero-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, transparent 70%);
+        z-index: 2;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+    }
+    .hero-content h1 {
+        color: #fff; /* White text for pop */
+        font-weight: 800;
+        font-size: 4.2rem;
+        /* Multi-layer shadow for depth and readability */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.3);
+    }
+     .hero-content p {
+        color: #f0f0f0; /* Off-white */
+        font-weight: 500;
+        font-size: 1.25rem;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+    }
+    .hero-btn.btn-primary {
+        background-color: #007bff !important;
+        border-color: #007bff !important;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+    .hero-btn.btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Page Section Separator */
+    .page-section {
+        padding-top: 4rem;
+        margin-top: 4rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Section Title */
+    .section-title {
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        margin-bottom: 50px;
+        position: relative;
+        font-size: 2.5rem;
+    }
+    .section-title span {
+        background-color: #fff;
+        padding: 0 20px;
+    }
+    .section-title::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #dee2e6;
+        z-index: -1;
+    }
+    .section-title .fas {
+        margin-right: 10px;
+    }
+
+    /* Feature Grid Section - Updated for Alignment */
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+    }
+     .feature-card .card-img-top {
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+    .feature-card .card-body {
+        position: relative;
+        padding-top: 40px;
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid #fff;
+    }
+
+    /* Product Card */
+    .product-card {
+        border-radius: 15px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1) !important;
+    }
+    .product-card .card-img-top {
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+    .product-card .product-title a {
+        color: #343a40;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+    .product-card .product-title a:hover {
+        color: var(--bs-primary);
+    }
+    .product-card .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--bs-primary);
+    }
+
+    /* Category Showcase Card */
+    .category-showcase-card {
+        border: none;
+        border-radius: 15px;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    .category-showcase-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.07);
+    }
+    .category-icon-big {
+        font-size: 4rem;
+        color: var(--bs-primary);
+    }
+
+    /* Gradient Button - New unified style */
+    .btn-primary-gradient {
+        background-image: linear-gradient(45deg, #0d6efd 0%, #0dcaf0 100%);
+        border: none;
+        color: white;
+        padding: 12px 28px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-primary-gradient:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.45);
+    }
+
+    /* Add styles for out-of-stock overlay */
+    .product-card.out-of-stock {
+        opacity: 0.7;
+    }
+    .product-image-container {
+        position: relative;
+    }
+    .stock-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+    .stock-overlay-text {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #dc3545;
+        padding: 0.5rem 1rem;
+        border: 2px solid #dc3545;
+        border-radius: 5px;
+        background-color: rgba(255,255,255,0.8);
+    }
+</style>
+}

@@ -1,0 +1,142 @@
+@model WebSiteBanHang.Models.Category
+
+@{
+    ViewData["Title"] = "Tạo Danh Mục Mới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --light-bg: #f8f9fa;
+        --white-color: #fff;
+    }
+
+    .admin-page-container {
+        padding: 2.5rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    
+    .admin-page-title {
+        color: #343a40;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .admin-page-title i {
+        color: var(--primary-color);
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .control-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .form-control:focus {
+        color: #212529;
+        background-color: #fff;
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--white-color);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-color);
+    }
+    .btn-secondary:hover {
+        background-color: #5c636a;
+        transform: translateY(-2px);
+    }
+</style>
+}
+
+<div class="admin-page-container">
+    <h1 class="admin-page-title">
+        <i class="fas fa-plus-square"></i>
+        <span>@ViewData["Title"]</span>
+    </h1>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Tên Danh Mục</label>
+                    <input asp-for="Name" class="form-control" placeholder="Ví dụ: Apple" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="admin-btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span>Tạo Mới</span>
+                    </button>
+                    <a asp-action="Index" class="admin-btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Quay Lại</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Thanh toán thất bại";
+}
+
+<div class="container text-center mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <i class="fas fa-times-circle fa-5x text-danger mb-4"></i>
+                    <h1 class="card-title h2">@TempData["PaymentMessage"]</h1>
+                    <p class="card-text lead">Đã có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.</p>
+                    <p>Nếu bạn vẫn gặp sự cố, vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi.</p>
+                    <div class="mt-4">
+                        <a asp-controller="Account" asp-action="OrderHistory" class="btn btn-primary">Thử thanh toán lại</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Về trang chủ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+} 

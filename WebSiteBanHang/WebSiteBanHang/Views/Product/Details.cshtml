@@ -1,0 +1,472 @@
+@model Product
+
+@{
+    ViewData["Title"] = Model.Name;
+    var mainImageUrl = Model.ProductImages?.FirstOrDefault()?.Url ?? Model.ImageUrl ?? "/images/placeholder.png";
+}
+
+<style>
+    /* Scoped styles for the product details page */
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .breadcrumb a {
+        color: #007bff;
+        text-decoration: none;
+    }
+     .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .product-details-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin-top: 20px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .product-gallery {
+        flex: 1 1 450px;
+        min-width: 300px;
+        position: relative; /* For discount badge */
+    }
+
+    .main-image-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    #mainImage {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+     #mainImage:hover {
+        transform: scale(1.03);
+     }
+
+    .discount-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: #dc3545;
+        color: white;
+        padding: 8px 15px;
+        font-size: 1.1em;
+        font-weight: bold;
+        border-radius: 5px;
+        z-index: 10;
+    }
+
+    .thumbnail-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .thumbnail:hover, .thumbnail.active {
+        border-color: #007bff;
+        transform: scale(1.05);
+    }
+
+    .product-info {
+        flex: 1 1 500px;
+    }
+
+    .product-info h1 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        line-height: 1.2;
+    }
+
+    .price-box {
+        background-color: rgba(0, 123, 255, 0.05);
+        border-left: 4px solid #007bff;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+    }
+
+    .price-display {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .product-price {
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: #dc3545; /* Highlight discount price */
+    }
+
+    .original-price-details {
+        font-size: 1.8rem;
+        font-weight: 400;
+        color: #6c757d;
+        text-decoration: line-through;
+    }
+
+    .product-description {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #555;
+        margin-bottom: 25px;
+    }
+    .out-of-stock-badge {
+        padding: 15px 25px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 5px;
+        display: inline-block;
+        margin-bottom: 25px;
+    }
+    .stock-info {
+        font-size: 0.9rem;
+        color: #28a745;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+    
+    .add-to-cart-form {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .quantity-btn {
+        background-color: #f5f5f5;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #333;
+        transition: background-color 0.2s;
+    }
+    
+    .quantity-btn:hover {
+        background-color: #e0e0e0;
+    }
+
+    #quantity {
+        width: 50px;
+        text-align: center;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 10px 0;
+        -moz-appearance: textfield; /* Firefox */
+    }
+
+     #quantity::-webkit-outer-spin-button,
+     #quantity::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+     }
+
+    .add-to-cart-btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 5px;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .product-meta {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .tech-specs {
+        margin-top: 40px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        width: 100%;
+    }
+
+    .tech-specs h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        text-align: center;
+        position: relative;
+        padding-bottom: 10px;
+    }
+    .tech-specs h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background-color: #007bff;
+    }
+    
+    .specs-table {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+
+    .specs-table tr {
+        transition: background-color 0.2s;
+    }
+    .specs-table tr:nth-child(odd) {
+        background-color: #fdfdfd;
+    }
+     .specs-table tr:hover {
+        background-color: #f1f8ff;
+    }
+
+    .specs-table td {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .specs-table td:first-child {
+        font-weight: 600;
+        color: #333;
+        width: 30%;
+    }
+
+</style>
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-white px-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang Chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index">Sản Phẩm</a></li>
+            @if (Model.Category != null)
+            {
+                <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Category" asp-route-id="@Model.CategoryId">@Model.Category.Name</a></li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="product-details-container">
+        <!-- Product Gallery -->
+        <div class="product-gallery">
+            <div class="main-image-container">
+                <img id="mainImage" src="@mainImageUrl" alt="@Model.Name" />
+                 @if (Model.DiscountPercent.HasValue)
+                {
+                    <div class="discount-badge">@Model.DiscountPercent% OFF</div>
+                }
+            </div>
+            @if (Model.ProductImages != null && Model.ProductImages.Count > 1)
+            {
+                <div class="thumbnail-gallery">
+                    @foreach (var image in Model.ProductImages)
+                    {
+                        <img class="thumbnail" src="@image.Url" alt="Thumbnail for @Model.Name" onclick="changeImage(this, '@image.Url')" />
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info">
+            <h1>@Model.Name</h1>
+
+            <div class="price-box">
+                 @if (Model.DiscountPrice.HasValue)
+                {
+                    <div class="price-display">
+                        <span class="product-price">@Model.DiscountPrice.Value.ToString("N0") đ</span>
+                        <span class="original-price-details">@Model.Price.ToString("N0") đ</span>
+                    </div>
+                }
+                else
+                {
+                    <span class="product-price" style="color: #007bff;">@Model.Price.ToString("N0") đ</span>
+                }
+            </div>
+
+            <div class="product-description">
+                <p>@Html.Raw(Model.Description ?? "Chưa có mô tả cho sản phẩm này.")</p>
+            </div>
+
+            @if (Model.Quantity > 0)
+            {
+                <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="add-to-cart-form">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" id="decrease-quantity" aria-label="Giảm số lượng">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="@Model.Quantity" class="form-control text-center" aria-label="Số lượng">
+                        <button type="button" class="quantity-btn" id="increase-quantity" aria-label="Tăng số lượng">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary add-to-cart-btn">
+                        <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                    </button>
+                     <div class="stock-info w-100">
+                        Chỉ còn @Model.Quantity sản phẩm
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="out-of-stock-badge">
+                    <i class="fas fa-times-circle"></i> Hết hàng
+                </div>
+            }
+
+            @if(Model.Category != null)
+            {
+                 <p class="product-meta">Danh mục: <a asp-action="Index" asp-controller="Category" asp-route-id="@Model.CategoryId">@Model.Category.Name</a></p>
+            }
+        </div>
+    </div>
+
+    <!-- Technical Specifications -->
+    @if (!string.IsNullOrEmpty(Model.Manufacturer) || !string.IsNullOrEmpty(Model.Color) || Model.StorageGB.HasValue)
+    {
+         <div class="tech-specs">
+            <h2>Thông số kỹ thuật</h2>
+            <table class="specs-table">
+                <tbody>
+                    @if (!string.IsNullOrEmpty(Model.Manufacturer))
+                    {
+                        <tr>
+                            <td>Hãng sản xuất</td>
+                            <td>@Model.Manufacturer</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Color))
+                    {
+                        <tr>
+                            <td>Màu sắc</td>
+                            <td>@Model.Color</td>
+                        </tr>
+                    }
+                    @if (Model.StorageGB.HasValue)
+                    {
+                        <tr>
+                            <td>Dung lượng lưu trữ</td>
+                            <td>@Model.StorageGB GB</td>
+                        </tr>
+                    }
+                    @if (Model.RamGB.HasValue)
+                    {
+                        <tr>
+                            <td>Dung lượng RAM</td>
+                            <td>@Model.RamGB GB</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.ScreenSize))
+                    {
+                        <tr>
+                            <td>Kích thước màn hình</td>
+                            <td>@Model.ScreenSize</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.CameraSpec))
+                    {
+                        <tr>
+                            <td>Thông số camera</td>
+                            <td>@Model.CameraSpec</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the first thumbnail as active initially
+            const firstThumbnail = document.querySelector('.thumbnail');
+            if (firstThumbnail) {
+                firstThumbnail.classList.add('active');
+            }
+            
+            const decreaseBtn = document.getElementById('decrease-quantity');
+            const increaseBtn = document.getElementById('increase-quantity');
+            const quantityInput = document.getElementById('quantity');
+
+            if(decreaseBtn && increaseBtn && quantityInput){
+                const maxQuantity = parseInt(quantityInput.getAttribute('max'));
+
+                decreaseBtn.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue > 1) {
+                        quantityInput.value = currentValue - 1;
+                    }
+                });
+
+                increaseBtn.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue < maxQuantity) {
+                        quantityInput.value = currentValue + 1;
+                    }
+                });
+
+                quantityInput.addEventListener('input', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (isNaN(currentValue) || currentValue < 1) {
+                        quantityInput.value = 1;
+                    } else if (currentValue > maxQuantity) {
+                        quantityInput.value = maxQuantity;
+                    }
+                });
+            }
+        });
+
+        function changeImage(thumbElement, newSrc) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = newSrc;
+
+            // Update active state for thumbnails
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            thumbElement.classList.add('active');
+        }
+
+    </script>
+} 

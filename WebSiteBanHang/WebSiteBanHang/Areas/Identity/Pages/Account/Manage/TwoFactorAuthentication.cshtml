@@ -1,0 +1,83 @@
+@page
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Xác thực hai yếu tố (2FA)";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<h4 class="manage-page-title">@ViewData["Title"]</h4>
+<p class="manage-page-subtitle">Quản lý cài đặt xác thực hai yếu tố của bạn.</p>
+
+@if (Model.Is2faEnabled)
+{
+    if (Model.RecoveryCodesLeft == 0)
+    {
+        <div class="alert alert-danger">
+            <strong>Bạn không còn mã khôi phục nào.</strong>
+            <p class="mb-0">Bạn phải <a asp-page="./GenerateRecoveryCodes">tạo một bộ mã khôi phục mới</a> trước khi bạn có thể đăng nhập bằng mã khôi phục.</p>
+        </div>
+    }
+    else if (Model.RecoveryCodesLeft == 1)
+    {
+        <div class="alert alert-warning">
+            <strong>Bạn còn 1 mã khôi phục.</strong>
+            <p class="mb-0">Bạn nên <a asp-page="./GenerateRecoveryCodes">tạo một bộ mã khôi phục mới</a>.</p>
+        </div>
+    }
+    else if (Model.RecoveryCodesLeft <= 3)
+    {
+        <div class="alert alert-warning">
+            <strong>Bạn còn @Model.RecoveryCodesLeft mã khôi phục.</strong>
+            <p class="mb-0">Bạn nên <a asp-page="./GenerateRecoveryCodes">tạo một bộ mã khôi phục mới</a>.</p>
+        </div>
+    }
+}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ứng dụng xác thực</h5>
+            </div>
+            <div class="card-body">
+                @if (!Model.HasAuthenticator)
+                {
+                    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Thêm ứng dụng xác thực</a>
+                }
+                else
+                {
+                    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Thiết lập ứng dụng</a>
+                    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-outline-danger ms-2">Reset ứng dụng</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Is2faEnabled)
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Tùy chọn khác</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.IsMachineRemembered)
+                    {
+                        <form method="post" style="display: inline-block; margin-right: 8px;">
+                            <button type="submit" class="btn btn-secondary">Quên trình duyệt này</button>
+                        </form>
+                    }
+                    <a asp-page="./Disable2fa" class="btn btn-danger">Tắt 2FA</a>
+                    <a asp-page="./GenerateRecoveryCodes" class="btn btn-secondary ms-2">Reset mã khôi phục</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

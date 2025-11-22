@@ -1,0 +1,283 @@
+@model WebSiteBanHang.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id;
+}
+
+@section Styles {
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --success-color: #198754;
+            --border-color: #dee2e6;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --body-bg: #f7f9fc;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .details-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            padding: 1rem 0;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .details-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+            .details-card .card-header {
+                background-color: transparent;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1rem 1.25rem;
+                font-weight: 600;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+            }
+
+                .details-card .card-header i {
+                    color: var(--primary-color);
+                    margin-right: 12px;
+                }
+
+            .details-card .card-body {
+                padding: 1.25rem;
+            }
+
+        .product-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+        }
+
+            .product-item:not(:last-child) {
+                border-bottom: 1px solid #f0f2f5;
+            }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: inline-block;
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+            padding: 0 !important;
+        }
+
+        .product-info {
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-weight: 500;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .product-quantity {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .product-price {
+            font-weight: 500;
+        }
+
+        .info-group {
+            margin-bottom: 1rem;
+        }
+
+            .info-group label {
+                display: block;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+                margin-bottom: 4px;
+            }
+
+            .info-group p {
+                font-size: 1rem;
+                margin: 0;
+                color: var(--text-primary);
+            }
+
+        .summary-card {
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+            .summary-line span:first-child {
+                color: var(--text-secondary);
+            }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+
+            .summary-total span:first-child {
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            .summary-total .total-price {
+                font-weight: 700;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+            }
+
+        .btn-vnpay {
+            width: 100%;
+            background: #ef282b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color .2s, transform .2s;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+            .btn-vnpay:hover {
+                background: #c81e21;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        @@media (max-width: 992px) {
+            .details-container {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                order: -1;
+            }
+        }
+    </style>
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Chi Tiết Đơn Hàng</h1>
+        <a asp-action="OrderHistory" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-2"></i>Lịch sử đơn hàng
+        </a>
+    </div>
+
+    <div class="details-container">
+        <div class="details-main-content">
+            <div class="details-card">
+                <div class="card-header"><i class="fas fa-shipping-fast"></i>Thông tin giao hàng</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 info-group">
+                            <label>Người nhận</label>
+                            <p>@Model.ReceiverName</p>
+                        </div>
+                        <div class="col-md-6 info-group">
+                            <label>Số điện thoại</label>
+                            <p>@Model.ReceiverPhone</p>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <label>Địa chỉ giao hàng</label>
+                        <p>@Model.ShippingAddress</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="info-group">
+                            <label>Ghi chú</label>
+                            <p>@Model.Notes</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="details-card">
+                <div class="card-header"><i class="fas fa-box-open"></i>Sản phẩm đã đặt</div>
+                <div class="card-body p-0">
+                    <ul class="product-list">
+                        @foreach (var item in Model.OrderDetails)
+                        {
+                            <li class="product-item" style="padding: 15px 20px;">
+                                <img src="@(item.Product.ImageUrl ?? "/images/placeholder.png")" alt="@item.Product.Name" class="product-image">
+                                <div class="product-info">
+                                    <span class="product-name">@item.Product.Name</span>
+                                    <span class="product-quantity">Số lượng: @item.Quantity</span>
+                                </div>
+                                <span class="product-price">@((item.Quantity * item.Price).ToString("N0"))đ</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-sidebar">
+            <div class="details-card summary-card">
+                <div class="card-header"><i class="fas fa-receipt"></i>Tóm tắt đơn hàng</div>
+                <div class="card-body">
+                    <div class="summary-line">
+                        <span>Trạng thái</span>
+                        <span>@Model.OrderStatus</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Phương thức thanh toán</span>
+                        <span>@Model.PaymentMethod</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Tạm tính</span>
+                        <span>@Model.TotalPrice.ToString("N0")đ</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Tổng cộng</span>
+                        <span class="total-price">@Model.TotalPrice.ToString("N0")đ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        @if (Model.PaymentMethod == "VNPay" && Model.OrderStatus == "Đã xác nhận" && Model.VnpayPayDate == null)
+                        {
+                            <a asp-controller="Payment" asp-action="CreateVnpayPayment" asp-route-orderId="@Model.Id" class="btn btn-vnpay btn-lg">
+                                <img src="~/images/logovnpay.png" />
+                                <span>Thanh toán</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

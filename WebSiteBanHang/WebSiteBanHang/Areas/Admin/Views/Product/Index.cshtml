@@ -1,0 +1,316 @@
+@model IEnumerable<WebSiteBanHang.Models.Product>
+
+@{
+    ViewData["Title"] = "Quản Lý Sản Phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --success-color: #198754;
+        --danger-color: #dc3545;
+        --info-color: #0dcaf0;
+        --light-bg: #f8f9fa;
+        --white-color: #fff;
+        --table-header-bg: #343a40;
+    }
+
+    .admin-page-container {
+        padding: 2.5rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .admin-page-title {
+        color: #343a40;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+    
+    .admin-page-title i {
+        color: var(--primary-color);
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--white-color);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .admin-btn-bulk-delete {
+        background-color: var(--danger-color);
+    }
+    .admin-btn-bulk-delete:hover {
+        background-color: #bb2d3b;
+    }
+
+    .admin-btn-add {
+        background-color: var(--primary-color);
+    }
+    .admin-btn-add:hover {
+        background-color: #0b5ed7;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .admin-table-container {
+        background-color: var(--white-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        overflow-x: auto; /* For responsive table */
+    }
+    
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px; /* Ensure table has a minimum width */
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 1rem;
+        text-align: left;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .admin-table thead {
+        background-color: var(--table-header-bg);
+        color: var(--white-color);
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+    }
+    .admin-table tbody tr:last-of-type { border-bottom: none; }
+    .admin-table tbody tr:hover { background-color: var(--light-bg); }
+    
+    .product-image-thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #eee;
+    }
+
+    .admin-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        display: inline-block;
+        width: 38px;
+        height: 38px;
+        line-height: 38px;
+        text-align: center;
+        border-radius: 50%;
+        color: var(--white-color);
+        transition: all 0.3s ease;
+        border: none; /* Make it a button */
+        cursor: pointer;
+    }
+    .action-btn i { font-size: 1rem; }
+    .action-btn.edit { background-color: var(--success-color); }
+    .action-btn.edit:hover { background-color: #157347; transform: scale(1.1); }
+    .action-btn.delete { background-color: var(--danger-color); }
+    .action-btn.delete:hover { background-color: #bb2d3b; transform: scale(1.1); }
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+    }
+
+    .price-display { display: flex; flex-direction: column; }
+    .original-price { text-decoration: line-through; color: #6c757d; font-size: 0.9em; }
+    .discount-price { font-weight: bold; color: #dc3545; }
+</style>
+}
+
+<div class="admin-page-container">
+    <div class="admin-page-header">
+        <h1 class="admin-page-title">@ViewData["Title"]</h1>
+        <a asp-action="Add" class="btn btn-primary ms-auto">
+            <i class="fas fa-plus"></i> Thêm Sản Phẩm
+        </a>
+    </div>
+
+    @* Notifications *@
+
+    <form asp-action="BulkUpdateDiscounts" method="post">
+        @Html.AntiForgeryToken()
+        <div class="text-end mb-3">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Áp dụng tất cả thay đổi
+            </button>
+        </div>
+        <div class="admin-table-container">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Hình Ảnh</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Giá Gốc</th>
+                        <th>Giảm giá (%)</th>
+                        <th>Giá sau giảm (VNĐ)</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var products = Model.ToList(); }
+                    @for (int i = 0; i < products.Count(); i++)
+                    {
+                        var item = products[i];
+                        <tr data-price="@item.Price">
+                            <input type="hidden" name="productDiscounts[@i].ProductId" value="@item.Id" />
+                            <td>
+                                <img src="@(Url.Content(item.ImageUrl ?? "/images/placeholder.png"))" alt="@item.Name" class="product-image-thumb"/>
+                            </td>
+                            <td><strong>@item.Name</strong></td>
+                            <td>@item.Price.ToString("N0") đ</td>
+                            <td>
+                                <input type="number" name="productDiscounts[@i].DiscountPercent" value="@item.DiscountPercent" class="form-control discount-percent" placeholder="%" min="0" max="99" style="width: 80px;" />
+                            </td>
+                            <td>
+                                <input type="number" name="productDiscounts[@i].DiscountPrice" value="@(item.DiscountPrice.HasValue ? item.DiscountPrice.Value.ToString("F0") : "")" class="form-control discount-price" placeholder="Giá cuối" step="1" />
+                            </td>
+                            <td>
+                                <div class="admin-table-actions">
+                                    <a asp-action="Update" asp-route-id="@item.Id" class="action-btn edit" title="Chỉnh sửa chi tiết">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <button class="action-btn delete single-delete-btn" data-id="@item.Id" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xác Nhận Xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa (các) sản phẩm này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            let idsToDelete = [];
+
+            // Handle single delete button click
+            $('.single-delete-btn').on('click', function () {
+                idsToDelete = [$(this).data('id')];
+                $('#deleteConfirmModal .modal-body').text('Bạn có chắc chắn muốn xóa sản phẩm này không?');
+                deleteModal.show();
+            });
+
+            // Handle confirm delete button click in modal
+            $('#confirmDeleteBtn').on('click', function () {
+                let url = idsToDelete.length > 1 ? '@Url.Action("DeleteMultiple", "Product", new { area = "Admin" })' : '@Url.Action("Delete", "Product", new { area = "Admin" })/' + idsToDelete[0];
+                let data = idsToDelete.length > 1 ? { ids: idsToDelete } : {};
+                
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // For anti-forgery
+                    },
+                    success: function (result) {
+                        deleteModal.hide();
+                        idsToDelete.forEach(id => {
+                            $('tr[data-id="' + id + '"]').fadeOut(500, function() {
+                                $(this).remove();
+                            });
+                        });
+                        // You can add a success toast/notification here
+                    },
+                    error: function (xhr, status, error) {
+                        deleteModal.hide();
+                        alert('Đã có lỗi xảy ra khi xóa sản phẩm.');
+                        console.error("Error:", error);
+                    }
+                });
+            });
+
+            // Real-time discount calculation
+            $('.admin-table tbody').on('input', '.discount-percent', function () {
+                const row = $(this).closest('tr');
+                const originalPrice = parseFloat(row.data('price'));
+                const percentInput = $(this);
+                const priceInput = row.find('.discount-price');
+                
+                const percent = parseFloat(percentInput.val());
+
+                if (isNaN(percent) || percent <= 0 || percent >= 100) {
+                    priceInput.val('');
+                    return;
+                }
+
+                const newPrice = originalPrice * (1 - (percent / 100));
+                priceInput.val(Math.round(newPrice));
+            });
+
+            $('.admin-table tbody').on('input', '.discount-price', function () {
+                const row = $(this).closest('tr');
+                const originalPrice = parseFloat(row.data('price'));
+                const priceInput = $(this);
+                const percentInput = row.find('.discount-percent');
+
+                const price = parseFloat(priceInput.val());
+
+                if (isNaN(price) || price <= 0 || price >= originalPrice) {
+                    percentInput.val('');
+                    return;
+                }
+
+                const newPercent = ((originalPrice - price) / originalPrice) * 100;
+                percentInput.val(Math.round(newPercent));
+            });
+        });
+    </script>
+} 

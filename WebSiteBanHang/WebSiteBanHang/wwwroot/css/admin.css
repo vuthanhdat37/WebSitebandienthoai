@@ -1,0 +1,54 @@
+/* Custom styles for the Admin area */
+
+.status-badge {
+    font-size: 0.85rem;
+    padding: 0.5em 0.9em;
+    border-radius: 0.25rem;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.status-pending { background-color: #ffc107; color: #212529; }
+.status-confirmed { background-color: #007bff; }
+.status-paid { background-color: #28a745; }
+.status-cancelled { background-color: #dc3545; }
+.status-default { background-color: #6c757d; }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.table-custom thead {
+    background-color: #0056b3; /* Dark blue background */
+}
+
+.table-custom thead th {
+    color: #ffffff; /* White text */
+}
+
+.table-custom th, .table-custom td {
+    vertical-align: middle;
+}
+
+.btn-approve {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-approve:hover {
+    background-color: #218838;
+}
+
+.admin-card .card-header {
+    background-color: #0056b3;
+    color: #ffffff;
+    border-bottom: 0;
+}
+
+.admin-card .card-header h4 {
+    color: #ffffff;
+} 

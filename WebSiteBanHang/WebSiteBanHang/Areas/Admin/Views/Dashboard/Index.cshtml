@@ -1,0 +1,319 @@
+@model WebSiteBanHang.Areas.Admin.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển Thống kê";
+    var selectedDays = ViewBag.SelectedDays;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" />
+    <style>
+        .kpi-card {
+            background: linear-gradient(135deg, #4b7bec, #3867d6); /* Vibrant Blue Gradient */
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(56, 103, 214, 0.3);
+        }
+        .kpi-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .kpi-card .card-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .kpi-card .icon {
+            color: #ffffff;
+            font-size: 4rem;
+            opacity: 0.15;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-15deg);
+            transition: transform 0.3s ease;
+        }
+        .kpi-card:hover .icon {
+            transform: translateY(-50%) rotate(-10deg) scale(1.1);
+        }
+
+        .chart-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+            height: 100%;
+        }
+        .chart-wrapper {
+            height: 380px; 
+            position: relative;
+        }
+        .filter-buttons .btn {
+             transition: all 0.2s ease-in-out;
+        }
+        .filter-buttons .btn.active {
+            background-color: #3867d6;
+            border-color: #3867d6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(56, 103, 214, 0.4);
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">@ViewData["Title"]</h1>
+        <div class="filter-buttons btn-group">
+            <a asp-action="Index" asp-route-days="7" class="btn btn-outline-secondary @(selectedDays == 7 ? "active" : "")">7 Ngày</a>
+            <a asp-action="Index" asp-route-days="30" class="btn btn-outline-secondary @(selectedDays == 30 ? "active" : "")">30 Ngày</a>
+            <a asp-action="Index" asp-route-days="90" class="btn btn-outline-secondary @(selectedDays == 90 ? "active" : "")">90 Ngày</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card kpi-card position-relative">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Doanh Thu</h5>
+                    <p class="card-text">@Model.TotalRevenue.ToString("N0")đ</p>
+                    <i class="fas fa-dollar-sign icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card position-relative">
+                <div class="card-body">
+                    <h5 class="card-title">Đơn Hàng Thành Công</h5>
+                    <p class="card-text">@Model.TotalOrders</p>
+                    <i class="fas fa-check-circle icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card position-relative" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                <div class="card-body">
+                    <h5 class="card-title">Đơn Hàng Chờ Xử Lý</h5>
+                    <p class="card-text">@Model.TotalConfirmedOrders</p>
+                    <i class="fas fa-hourglass-start icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card position-relative">
+                <div class="card-body">
+                    <h5 class="card-title">Phổ Biến Nhất</h5>
+                    <p class="card-text" style="font-size: 1.5rem;">@Model.MostPopularProduct</p>
+                    <i class="fas fa-fire icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row mt-4">
+        <div class="col-lg-7 mb-4 mb-lg-0">
+            <div class="chart-container">
+                <h5 class="mb-3">Doanh thu theo ngày</h5>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="chart-container">
+                <h5 class="mb-3">Top 5 sản phẩm bán chạy</h5>
+                <div class="chart-wrapper">
+                    <canvas id="topProductsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Đơn hàng thành công gần đây</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentSuccessfulOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Mã Đơn</th>
+                                        <th>Ngày Đặt</th>
+                                        <th>Người Nhận</th>
+                                        <th>Địa chỉ</th>
+                                        <th class="text-end">Tổng Tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentSuccessfulOrders)
+                                    {
+                                        <tr>
+                                            <td><strong>#@order.Id</strong></td>
+                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>@order.ReceiverName</td>
+                                            <td>@order.ShippingAddress</td>
+                                            <td class="text-end">@order.TotalPrice.ToString("N0")đ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center p-4">
+                            <p class="mb-0">Không có đơn hàng thành công nào trong khoảng thời gian này.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Data from the Model
+            const revenueData = @Html.Raw(Json.Serialize(Model.RevenueByDate));
+            const topProductsData = @Html.Raw(Json.Serialize(Model.TopSellingProducts));
+
+            // 1. Revenue Chart (Line Chart)
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            
+            const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 350);
+            revenueGradient.addColorStop(0, 'rgba(75, 123, 236, 0.3)');
+            revenueGradient.addColorStop(1, 'rgba(75, 123, 236, 0)');
+
+            if (window.revenueChartInstance) {
+                window.revenueChartInstance.destroy();
+            }
+            window.revenueChartInstance = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueData.map(d => d.period),
+                    datasets: [{
+                        label: 'Doanh thu',
+                        data: revenueData.map(d => d.revenue),
+                        backgroundColor: revenueGradient,
+                        borderColor: '#4b7bec',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4b7bec',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
+                                }
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Top Products Chart (Bar Chart)
+            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+            
+            const productChartColors = [
+                '#4b7bec', // Vibrant Blue
+                '#20c997', // Teal
+                '#fd7e14', // Orange
+                '#6f42c1', // Indigo
+                '#0dcaf0'  // Cyan
+            ];
+
+            if (window.topProductsChartInstance) {
+                window.topProductsChartInstance.destroy();
+            }
+            window.topProductsChartInstance = new Chart(topProductsCtx, {
+                type: 'bar',
+                data: {
+                    labels: topProductsData.map(p => p.productName),
+                    datasets: [{
+                        label: 'Số lượng bán',
+                        data: topProductsData.map(p => p.unitsSold),
+                        backgroundColor: productChartColors,
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal bar chart
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                             grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+} 

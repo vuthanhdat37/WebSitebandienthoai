@@ -1,0 +1,184 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Đảm bảo sử dụng layout chính
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header text-center">
+            <a asp-controller="Home" asp-action="Index" class="auth-logo">
+                <i class="fas fa-mobile-alt"></i>
+                <h1>Tech World</h1>
+            </a>
+            <p class="auth-subtitle">Chào mừng trở lại! Vui lòng đăng nhập.</p>
+        </div>
+
+        <section class="auth-body">
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="Input.RememberMe" />
+                        <label class="form-check-label" asp-for="Input.RememberMe">
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                    <a id="forgot-password" asp-page="./ForgotPassword" class="auth-link">Quên mật khẩu?</a>
+                </div>
+                
+                <div class="mb-3">
+                    <button id="login-submit" type="submit" class="w-100 btn btn-primary btn-lg auth-btn">Đăng Nhập</button>
+                </div>
+                <div class="text-center">
+                    <p class="auth-switch-link">
+                        Chưa có tài khoản? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Đăng ký ngay</a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    :root {
+        --primary-color: #007bff;
+        --primary-hover-color: #0056b3;
+        --body-bg-color: #f4f6f9;
+        --card-bg-color: #ffffff;
+        --text-color: #212529;
+        --secondary-text-color: #6c757d;
+        --border-color: #dee2e6;
+        --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 150px); /* Adjust based on header/footer height */
+        padding: 2rem 0;
+        background-color: var(--body-bg-color);
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 420px;
+        background-color: var(--card-bg-color);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .auth-header .auth-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        color: var(--text-color);
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+    }
+    .auth-header .auth-logo i {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    .auth-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    .auth-header .auth-subtitle {
+        color: var(--secondary-text-color);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-body .form-control {
+        height: 50px;
+        border-color: var(--border-color);
+    }
+    .auth-body .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .auth-btn {
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .auth-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    .auth-switch-link {
+        font-size: 0.95rem;
+        color: var(--secondary-text-color);
+    }
+    .auth-switch-link a {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+    }
+     .auth-switch-link a:hover {
+        text-decoration: underline;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Overwrite button color */
+    .auth-btn {
+        background-color: var(--primary-color) !important;
+        color: white !important;
+    }
+     .auth-btn:hover {
+        background-color: var(--primary-hover-color) !important;
+    }
+
+    /* Remove outer frame */
+    /*
+    body {
+        background-color: var(--body-bg-color) !important;
+    }
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    */
+</style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

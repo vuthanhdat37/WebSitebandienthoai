@@ -1,0 +1,316 @@
+@model WebSiteBanHang.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4 admin-details-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 page-title"><i class="fas fa-file-invoice-dollar me-2"></i>Chi tiết đơn hàng #@Model.Id</h4>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">@TempData["Message"]</div>
+    }
+
+    <form asp-action="Update" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="OrderDate" />
+        <input type="hidden" asp-for="VnpayTxnRef"/>
+        <input type="hidden" asp-for="VnpayTransactionNo"/>
+        <input type="hidden" asp-for="VnpayPayDate"/>
+        <input type="hidden" asp-for="PaymentMethod" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card admin-card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-box-open me-2"></i>Sản phẩm trong đơn hàng</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-right">Đơn giá</th>
+                                        <th class="text-right">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@Model.OrderDetails[i].Product.ImageUrl" class="img-fluid rounded me-3 product-thumb" alt="@Model.OrderDetails[i].Product.Name">
+                                                    <div>
+                                                        <input type="hidden" asp-for="OrderDetails[i].Id" />
+                                                        <input type="hidden" asp-for="OrderDetails[i].OrderId" />
+                                                        <input type="hidden" asp-for="OrderDetails[i].ProductId" />
+                                                        <input type="hidden" asp-for="OrderDetails[i].Price" />
+                                                        <strong>@Model.OrderDetails[i].Product.Name</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="number" asp-for="OrderDetails[i].Quantity" class="form-control form-control-sm quantity-input" min="0" />
+                                            </td>
+                                            <td class="text-right price-cell" data-price="@Model.OrderDetails[i].Price">@Model.OrderDetails[i].Price.ToString("N0") VNĐ</td>
+                                            <td class="text-right total-cell">@((Model.OrderDetails[i].Price * Model.OrderDetails[i].Quantity).ToString("N0")) VNĐ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card admin-card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user-circle me-2"></i>Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label asp-for="ReceiverName">Tên người nhận</label>
+                            <input asp-for="ReceiverName" class="form-control" />
+                        </div>
+                         <div class="form-group mb-3">
+                            <label asp-for="ReceiverPhone">Số điện thoại</label>
+                            <input asp-for="ReceiverPhone" class="form-control" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ShippingAddress">Địa chỉ giao hàng</label>
+                            <textarea asp-for="ShippingAddress" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Notes">Ghi chú</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OrderStatus">Trạng thái đơn hàng</label>
+                            <select asp-for="OrderStatus" class="form-control">
+                                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                                <option value="Đã xác nhận">Đã xác nhận</option>
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                                <option value="Đã giao hàng">Đã giao hàng</option>
+                                <option value="Đã thanh toán">Đã thanh toán</option>
+                                <option value="Đã từ chối">Đã từ chối</option>
+                                <option value="Đã hủy">Đã hủy</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card admin-card mb-4">
+                     <div class="card-body">
+                         <div class="summary-total">
+                            <span>Tổng cộng</span>
+                            <span class="total-price">@Model.TotalPrice.ToString("N0")đ</span>
+                        </div>
+                     </div>
+                </div>
+                 <div class="card admin-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tasks me-2"></i>Hành động</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-action-save"><i class="fas fa-save me-2"></i>Lưu thay đổi</button>
+                             @if (Model.OrderStatus == "Chờ xác nhận" || Model.OrderStatus == "Đã từ chối")
+                            {
+                               <div class="d-flex gap-2 mt-2">
+                                    @if(Model.OrderStatus != "Đã xác nhận")
+                                    {
+                                        <button type="submit" class="btn btn-action-approve w-100" asp-action="Approve" asp-route-id="@Model.Id">
+                                            <i class="fas fa-check-circle me-2"></i>Duyệt đơn
+                                        </button>
+                                    }
+                                    @if(Model.OrderStatus == "Chờ xác nhận")
+                                    {
+                                        <button type="submit" class="btn btn-action-reject w-100" asp-action="Reject" asp-route-id="@Model.Id"
+                                                formnovalidate="formnovalidate" onclick="return confirm('Bạn có chắc muốn từ chối đơn hàng này không?');">
+                                            <i class="fas fa-times-circle me-2"></i>Từ chối
+                                        </button>
+                                    }
+                               </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --primary-light: #e6f0ff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --border-color: #dee2e6;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --body-bg: #f7f9fc;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .admin-details-container .page-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .admin-details-container .admin-card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+        .admin-card .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+        }
+        .admin-card .card-header h5 {
+            margin:0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        .admin-card .card-header i {
+             color: var(--primary-color);
+        }
+
+        .table-custom {
+            border-collapse: collapse;
+        }
+        .table-custom thead {
+            background-color: var(--primary-color);
+        }
+        .table-custom thead th {
+            border-bottom-width: 0;
+            font-weight: 500;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+        }
+        .table-custom td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+        }
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .quantity-input {
+            width: 75px;
+            text-align: center;
+            margin: auto;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .summary-total span:first-child { font-weight: 600; font-size: 1.1rem; }
+        .summary-total .total-price { font-weight: 700; font-size: 1.5rem; color: var(--primary-color); }
+
+        .btn {
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-action-save { background-color: var(--success-color); color: white; }
+        .btn-action-save:hover { background-color: #157347; }
+
+        .btn-action-approve { background-color: var(--primary-color); color: white; }
+        .btn-action-approve:hover { background-color: #004494; }
+
+        .btn-action-reject { background-color: var(--danger-color); color: white; }
+        .btn-action-reject:hover { background-color: #b02a37; }
+
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quantityInputs = document.querySelectorAll('.quantity-input');
+            const totalPriceElement = document.querySelector('.total-price');
+            const productRows = document.querySelectorAll('tbody tr');
+
+            function calculateTotal() {
+                let grandTotal = 0;
+                productRows.forEach(row => {
+                    const quantityInput = row.querySelector('.quantity-input');
+                    const priceCell = row.querySelector('.price-cell'); // Assuming you add this class
+                    const totalCell = row.querySelector('.total-cell'); // Assuming you add this class
+
+                    const price = parseFloat(priceCell.dataset.price);
+                    const quantity = parseInt(quantityInput.value, 10);
+
+                    if (!isNaN(price) && !isNaN(quantity)) {
+                        const lineTotal = price * quantity;
+                        totalCell.textContent = lineTotal.toLocaleString('vi-VN') + ' VNĐ';
+                        grandTotal += lineTotal;
+                    }
+                });
+
+                totalPriceElement.textContent = grandTotal.toLocaleString('vi-VN') + ' VNĐ';
+            }
+
+            quantityInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // Ensure non-negative values
+                    if (parseInt(this.value, 10) < 0) {
+                        this.value = 0;
+                    }
+                    calculateTotal();
+                });
+            });
+
+            // Initial calculation on page load
+            calculateTotal();
+        });
+    </script>
+} 

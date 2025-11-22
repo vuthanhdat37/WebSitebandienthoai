@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+}
+
+<div class="container my-5 text-center fade-in">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="confirmation-icon-wrapper mb-4">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1 class="display-4 font-weight-bold text-primary">Cảm Ơn Bạn!</h1>
+                    <p class="lead my-3 text-muted">Đơn hàng của bạn đã được tiếp nhận thành công.</p>
+                    <p>Chúng tôi sẽ xử lý đơn hàng và liên hệ với bạn trong thời gian sớm nhất. Bạn có thể kiểm tra trạng thái đơn hàng trong lịch sử mua hàng của mình.</p>
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-center">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg mx-2 gradient-btn">
+                            <i class="fas fa-home mr-2"></i> Về Trang Chủ
+                        </a>
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary btn-lg mx-2">
+                            <i class="fas fa-shopping-bag mr-2"></i> Tiếp Tục Mua Sắm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<style>
+    .gradient-btn {
+        background-image: linear-gradient(to right, #007bff 0%, #00bfff 100%);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+        background-size: 200% auto;
+    }
+    .gradient-btn:hover {
+        background-position: right center;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    }
+    .confirmation-icon-wrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        background: linear-gradient(to right, #007bff, #00bfff);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        animation: pop-in 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    @@keyframes pop-in {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+    }
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+} 
